@@ -12,10 +12,15 @@ SIZE    = arm-none-eabi-size
 # device
 DEFS = -DNRF52832_XXAA
 
-CFLAGS  = -mcpu=cortex-m4 -mthumb -mfloat-abi=soft \
-          -ffunction-sections -fdata-sections \
-          -ffreestanding -fno-builtin -Wall -Wextra -O2 -g3 \
-          $(DEFS)
+CFLAGS  =	-mcpu=cortex-m4 -mthumb -mfloat-abi=soft \
+			-ffunction-sections -fdata-sections \
+			-ffreestanding -fno-builtin -Wall -Wextra -O2 -g3 \
+			-MMD -MP \
+			$(DEFS)
+
+INCLUDES = -Isrc -Isrc/lib -Isrc/drivers -Isrc/soc
+CFLAGS  += $(INCLUDES)
+
 
 LDSCRIPT = src/linker.ld
 LDFLAGS  = -T $(LDSCRIPT) -nostartfiles \
@@ -60,11 +65,14 @@ disasm: $(BUILD)/$(TARGET).elf
 
 clean:
 	rm -rf $(BUILD)
-	
+
 flash: $(JLINK_SCRIPT)
 	$(JLINK) -autoconnect 1 -commanderscript $(JLINK_SCRIPT)
 
 debug: $(BUILD)/$(TARGET).elf
 	$(GDB) $<
-	
+
 .PHONY: all clean disasm flash debug
+
+DEPS := $(OBJS:.o=.d)
+-include $(DEPS)
