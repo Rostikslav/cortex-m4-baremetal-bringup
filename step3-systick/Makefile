@@ -1,5 +1,6 @@
-TARGET = app
-BUILD  = build
+TARGET	= app
+BUILD	= build
+CACHE	= .cache
 
 JLINK = JLinkExe
 JLINK_SCRIPT := $(BUILD)/flash.jlink
@@ -10,7 +11,7 @@ GDB		= arm-none-eabi-gdb
 SIZE    = arm-none-eabi-size
 
 # device
-DEFS = -DNRF52832_XXAA
+DEFS = -DNRF52832_XXAA -DCPU_HZ=64000000u
 
 CFLAGS  =	-mcpu=cortex-m4 -mthumb -mfloat-abi=soft \
 			-ffunction-sections -fdata-sections \
@@ -18,19 +19,22 @@ CFLAGS  =	-mcpu=cortex-m4 -mthumb -mfloat-abi=soft \
 			-MMD -MP \
 			$(DEFS)
 
-INCLUDES = -Isrc -Isrc/lib -Isrc/drivers -Isrc/soc
+INCLUDES = -Isrc -Isrc/lib -Isrc/drivers -Isrc/soc -Isrc/core
 CFLAGS  += $(INCLUDES)
 
 
 LDSCRIPT = src/linker.ld
 LDFLAGS  = -T $(LDSCRIPT) -nostartfiles \
-          -Wl,--gc-sections -Wl,-Map=$(BUILD)/$(TARGET).map
+		   -Wl,--gc-sections -Wl,-Map=$(BUILD)/$(TARGET).map
 
-SRCS =	src/startup.S \
-		src/main.c
+SRCS := $(wildcard src/*.c) \
+		$(wildcard src/*.S) \
+		$(wildcard src/soc/*.c) \
+		$(wildcard src/core/*.c) \
+		$(wildcard src/drivers/*.c)
 
 OBJS = $(addprefix $(BUILD)/,$(SRCS:.c=.o))
-OBJS := $(OBJS:.S=.o)
+	OBJS := $(OBJS:.S=.o)
 
 all: $(BUILD)/$(TARGET).elf
 
@@ -49,22 +53,22 @@ $(BUILD)/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
 $(JLINK_SCRIPT): $(BUILD)/$(TARGET).elf
 	@mkdir -p $(BUILD)
 	@printf '%s\n' \
-	  'device NRF52832_XXAA' \
-	  'if SWD' \
-	  'speed 4000' \
-	  'r' \
-	  'h' \
-	  'loadfile $(BUILD)/$(TARGET).elf' \
-	  'r' \
-	  'h' \
-	  'g' \
-	  'exit' > $@
+		'device NRF52832_XXAA' \
+		'if SWD' \
+		'speed 4000' \
+		'r' \
+		'h' \
+		'loadfile $(BUILD)/$(TARGET).elf' \
+		'r' \
+		'h' \
+		'g' \
+		'exit' > $@
 
 disasm: $(BUILD)/$(TARGET).elf
 	$(OBJDUMP) -d $< | less
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(BUILD) $(CACHE)
 
 flash: $(JLINK_SCRIPT)
 	$(JLINK) -autoconnect 1 -commanderscript $(JLINK_SCRIPT)
