@@ -2,7 +2,7 @@
 #define CORTEXM4_MAP_H
 
 // system control space
-#define SCS_BASE                0xE000E000
+#define SCS_BASE                0xE000E000L
 
 // SysTick
 
@@ -35,5 +35,21 @@
 #define SYST_CALIB_SKEW_MSK     (1u << SYST_CALIB_SKEW_POS)
 #define SYST_CALIB_NOREF_POS    31
 #define SYST_CALIB_NOREF_MSK    (1u << SYST_CALIB_NOREF_POS)
+
+// NVIC
+#define NVIC_BASE               (SCS_BASE + 0x0100)
+#define NVIC_ISER_BASE          (NVIC_BASE + 0x000)
+#define NVIC_ICER_BASE          (NVIC_BASE + 0x080)
+#define NVIC_ISPR_BASE          (NVIC_BASE + 0x100)
+#define NVIC_ICPR_BASE          (NVIC_BASE + 0x180)
+#define NVIC_IABR_BASE          (NVIC_BASE + 0x200)
+#define NVIC_IPR_BASE           (NVIC_BASE + 0x300)
+#define NVIC_STIR               (NVIC_BASE + 0xE00)
+
+#define NVIC_ISER(_reg_i)       (NVIC_ISER_BASE + ((_reg_i) << 2))
+#define NVIC_ICER(_reg_i)       (NVIC_ICER_BASE + ((_reg_i) << 2))
+#define NVIC_ISPR(_reg_i)       (NVIC_ISPR_BASE + ((_reg_i) << 2))
+#define NVIC_ICPR(_reg_i)       (NVIC_ICPR_BASE + ((_reg_i) << 2))
+#define NVIC_IPR(_irqn)         (NVIC_IPR_BASE + ((uint32_t) _irqn))
 
 #endif

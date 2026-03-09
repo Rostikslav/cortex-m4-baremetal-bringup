@@ -11,7 +11,7 @@ GDB		= arm-none-eabi-gdb
 SIZE    = arm-none-eabi-size
 
 # device
-DEFS = -DNRF52832_XXAA -DCPU_HZ=64000000u
+DEFS = -DCPU_HZ=64000000u
 
 CFLAGS  =	-mcpu=cortex-m4 -mthumb -mfloat-abi=soft \
 			-ffunction-sections -fdata-sections \

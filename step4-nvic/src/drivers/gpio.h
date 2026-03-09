@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "nrf52832_map.h"
+#include "nrf52832_gpio_map.h"
 #include "mmio.h"
 
 #define GPIO0_PIN(_pin_n) \
