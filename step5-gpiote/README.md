@@ -19,19 +19,19 @@ void gpiote_configure_channel(gpiote_config_t cfg);
 ```
 The configuration includes:
 - pin selection (`PSEL`)
-    - channel index
+- channel index
 - mode (`EVENT` / `TASK`)
-    - polarity
+- polarity
 - initial output state (`OUTINIT`)
 
-    ``` c
-    typedef struct {
-        uint8_t pin;
-        gpiote_channel_t channel;
-        gpiote_mode_t mode;
-        gpiote_polarity_t polarity;
-        gpiote_outinit_t outinit;
-    } gpiote_config_t;
+``` c
+typedef struct {
+    uint8_t pin;
+    gpiote_channel_t channel;
+    gpiote_mode_t mode;
+    gpiote_polarity_t polarity;
+    gpiote_outinit_t outinit;
+} gpiote_config_t;
 ```
 
 This allows unified setup of GPIOTE channels independent of their runtime usage.
